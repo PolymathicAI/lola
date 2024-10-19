@@ -15,7 +15,7 @@ import itertools
 import math
 import torch
 import torch.nn as nn
-import xformers.components.attention.core as xfa
+import torch.nn.attention.flex_attention as fa
 
 from einops import repeat
 from einops.layers.torch import Rearrange
@@ -223,19 +223,30 @@ class DiT(nn.Module):
         if window_size is None:
             mask = None
         else:
-            delta = torch.abs(indices[:, None] - indices[None, :])
+            delta = indices[:, None] - indices[None, :]
+            delta = torch.abs(delta)
             delta = torch.minimum(delta, delta.new_tensor(shape) - delta)
 
-            mask = torch.all(delta <= indices.new_tensor(window_size) // 2, dim=-1)
+            mask = torch.all(delta <= delta.new_tensor(window_size) // 2, dim=-1)
             mask = torch.nn.functional.pad(mask, (0, registers, 0, registers), value=True)
 
-            if xfa._has_cpp_library:
-                mask = xfa.SparseCS(mask, device=mask.device)._mat
+            def mod_mask(b, h, i, j, mask=mask):
+                return mask[i, j]
+
+            if device.type == "cuda":
+                mask = fa.create_block_mask(
+                    mask_mod=mod_mask,
+                    B=None,
+                    H=None,
+                    Q_LEN=math.prod(shape) + registers,
+                    KV_LEN=math.prod(shape) + registers,
+                    device=device,
+                )
 
         register_indices = torch.arange(-registers, 0, device=device)
         register_indices = repeat(register_indices, "R -> R n", n=spatial)
 
-        indices = torch.cat((indices, register_indices), dim=-2)
+        indices = torch.cat((indices, register_indices))
 
         return indices.to(dtype=dtype), mask
 

@@ -7,10 +7,9 @@ dependencies = [
   "einops==0.8.0",
   "h5py==3.11.0",
   "numpy==1.26.4",
-  "torch==2.4.1",
-  "torchvision==0.19.1",
+  "torch==2.5.0",
+  "torchvision==0.20.0",
   "tqdm==4.66.5",
-  "xformers==0.0.28",
 ]
 requires-python = ">=3.11"
 
