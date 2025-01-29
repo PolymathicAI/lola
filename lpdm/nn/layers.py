@@ -194,8 +194,8 @@ class Patchify(nn.Module):
             h, w = self.patch_size
             return rearrange(x, "... C (H h) (W w) -> ... (C h w) H W", h=h, w=w)
         elif len(self.patch_size) == 3:
-            l, h, w = self.patch_size
-            return rearrange(x, "... C (L l) (H h) (W w) -> ... (C l h w) L H W", l=l, h=h, w=w)
+            t, h, w = self.patch_size
+            return rearrange(x, "... C (T t) (H h) (W w) -> ... (C t h w) T H W", t=t, h=h, w=w)
         else:
             raise NotImplementedError()
 

@@ -90,7 +90,7 @@ if __name__ == "__main__":
     # Job
     dawgz.schedule(
         dawgz.job(
-            f=partial(get_stats, cfg.dataset, args.samples),
+            f=partial(get_stats, cfg),
             name="stats",
             cpus=cfg.compute.cpus,
             gpus=cfg.compute.gpus,

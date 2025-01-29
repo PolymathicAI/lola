@@ -3,6 +3,7 @@
 import argparse
 import dawgz
 import wandb
+import os
 
 from functools import partial
 from omegaconf import DictConfig
@@ -86,7 +87,7 @@ def train(runid: str, cfg: DictConfig):
             path=cfg.server.datasets,
             physics=cfg.dataset.physics,
             split=split,
-            steps=1,
+            steps=cfg.dataset.steps,
             include_filters=cfg.dataset.include_filters,
             augment=cfg.dataset.augment,
         )
@@ -119,6 +120,8 @@ def train(runid: str, cfg: DictConfig):
         pix_channels=dataset["train"].metadata.n_fields,
         **cfg.ae,
     ).to(device)
+    if rank == 0:
+        print(autoencoder)
 
     autoencoder_loss = WeightedLoss(**cfg.ae.loss).to(device)
 
@@ -138,7 +141,7 @@ def train(runid: str, cfg: DictConfig):
     )
 
     # W&B
-    if rank == 0:
+    if rank == 0 and not cfg.wandb.dry_run:
         run = wandb.init(
             entity=cfg.wandb.entity,
             project="mpp-ae",
@@ -162,7 +165,7 @@ def train(runid: str, cfg: DictConfig):
         for i in range(cfg.train.epoch_size // cfg.train.batch_size):
             x, _ = get_well_inputs(next(train_loader), device=device)
             x = preprocess(x)
-            x = rearrange(x, "B 1 H W C -> B C H W")
+            x = rearrange(x, "B T H W C -> B C T H W")
 
             if (i + 1) % cfg.train.accumulation == 0:
                 y, z = autoencoder(x)
@@ -221,7 +224,7 @@ def train(runid: str, cfg: DictConfig):
             for _ in range(cfg.train.epoch_size // cfg.train.batch_size):
                 x, _ = get_well_inputs(next(valid_loader), device=device)
                 x = preprocess(x)
-                x = rearrange(x, "B 1 H W C -> B C H W")
+                x = rearrange(x, "B T H W C -> B C T H W")
 
                 y, z = autoencoder(x)
                 loss = autoencoder_loss(x, y)
@@ -281,7 +284,7 @@ if __name__ == "__main__":
 
     # Config
     cfg = compose(
-        config_file="./configs/train_ae.yaml",
+        config_file=os.path.join(os.path.dirname(__file__), "configs", "train_ae.yaml"),
         overrides=args.overrides,
     )
 

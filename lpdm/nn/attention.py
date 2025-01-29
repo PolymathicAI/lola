@@ -8,7 +8,8 @@ import torch
 import torch.nn as nn
 import warnings
 
-with warnings.catch_warnings(action="ignore"):
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
     import xformers.components.attention.core as xfa
     import xformers.sparse as xfs
 
