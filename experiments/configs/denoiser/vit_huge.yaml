@@ -1,0 +1,12 @@
+name: "vit_huge"
+arch: "vit"
+emb_features: 256
+hid_channels: 2048
+hid_blocks: 16
+attention_heads: 16
+qk_norm: true
+rope: true
+patch_size: [1, 1, 1]
+window_size: null
+dropout: 0.05
+checkpointing: false
