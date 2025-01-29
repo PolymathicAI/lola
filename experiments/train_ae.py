@@ -41,8 +41,8 @@ def train(runid: str, cfg: DictConfig):
     torch.cuda.set_device(device)
 
     # Config
-    assert cfg.train.batch_size % world_size == 0
-    assert cfg.train.epoch_size % (cfg.train.batch_size * cfg.train.accumulation) == 0
+    assert cfg.train.epoch_size % cfg.train.batch_size == 0
+    assert cfg.train.batch_size % (cfg.train.accumulation * world_size) == 0
 
     runname = f"{runid}_{cfg.dataset.name}_{cfg.ae.name}"
 
@@ -96,7 +96,7 @@ def train(runid: str, cfg: DictConfig):
     train_loader, valid_loader = [
         get_dataloader(
             dataset=dataset[split],
-            batch_size=cfg.train.batch_size // world_size,
+            batch_size=cfg.train.batch_size // cfg.train.accumulation // world_size,
             shuffle=True if split == "train" else False,
             infinite=True,
             num_workers=cfg.compute.cpus_per_gpu,
@@ -173,7 +173,7 @@ def train(runid: str, cfg: DictConfig):
                 grad_norm = safe_gd_step(optimizer, grad_clip=cfg.optim.grad_clip)
                 grads.append(grad_norm)
 
-                counter["update_samples"] += cfg.train.batch_size * cfg.train.accumulation
+                counter["update_samples"] += cfg.train.batch_size
                 counter["update_steps"] += 1
             else:
                 with autoencoder.no_sync():

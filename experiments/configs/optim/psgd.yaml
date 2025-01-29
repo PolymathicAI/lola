@@ -3,7 +3,7 @@ optimizer: "psgd"
 betas: [0.9]
 precondition_frequency: 64
 precondition_dim: 4096
-learning_rate: 1e-5
+learning_rate: 3e-5
 weight_decay: 0.0
 warmup: 0
 scheduler: "cosine"

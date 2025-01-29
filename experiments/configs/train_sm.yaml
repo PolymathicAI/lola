@@ -15,7 +15,7 @@ trajectory:
 train:
   epochs: 1024
   epoch_size: 16384
-  batch_size: 64
+  batch_size: 256
   accumulation: 1
 
 fork:
