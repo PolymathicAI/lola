@@ -134,7 +134,7 @@ def train(runid: str, cfg: DictConfig):
     denoiser_loss = DenoiserLoss(**cfg.denoiser.loss).to(device)
 
     if cfg.fork.run is not None:
-        denoiser.load_state_dict(stem_state)
+        denoiser.load_state_dict(stem_state, strict=cfg.fork.strict)
         del stem_state
 
     denoiser = DistributedDataParallel(

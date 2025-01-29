@@ -23,6 +23,7 @@ train:
 fork:
   run: null
   target: "state"
+  strict: true
 
 compute:
   cpus_per_gpu: 8

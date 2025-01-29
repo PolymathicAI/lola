@@ -123,7 +123,7 @@ def train(runid: str, cfg: DictConfig):
     autoencoder_loss = WeightedLoss(**cfg.ae.loss).to(device)
 
     if cfg.fork.run is not None:
-        autoencoder.load_state_dict(stem_state)
+        autoencoder.load_state_dict(stem_state, strict=cfg.fork.strict)
         del stem_state
 
     autoencoder = DistributedDataParallel(

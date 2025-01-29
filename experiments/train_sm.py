@@ -131,7 +131,7 @@ def train(runid: str, cfg: DictConfig):
     ).to(device)
 
     if cfg.fork.run is not None:
-        surrogate.load_state_dict(stem_state)
+        surrogate.load_state_dict(stem_state, strict=cfg.fork.strict)
         del stem_state
 
     surrogate = DistributedDataParallel(

@@ -24,6 +24,7 @@ train:
 fork:
   run: null
   target: "state"
+  strict: true
 
 compute:
   nodes: 1
