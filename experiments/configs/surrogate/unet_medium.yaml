@@ -2,10 +2,10 @@ name: "unet_medium"
 arch: "unet"
 emb_features: 256
 hid_channels: [128, 256, 384, 512]
-hid_blocks: [3, 3, 3, 3]
+hid_blocks: [1, 2, 3, 3]
 stride: [1, 2, 2]
 norm: "layer"
-attention_heads: {2: 3, 3: 4}
+attention_heads: {3: 4}
 periodic: false
 dropout: 0.05
 checkpointing: false

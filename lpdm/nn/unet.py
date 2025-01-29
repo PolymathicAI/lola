@@ -62,6 +62,7 @@ class UNetBlock(nn.Module):
             self.attn = nn.Identity()
         else:
             self.attn = Residual(
+                LayerNorm(dim=-spatial - 1),
                 SelfAttentionNd(channels, heads=attention_heads),
             )
 

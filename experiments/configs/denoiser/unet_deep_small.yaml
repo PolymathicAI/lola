@@ -1,12 +1,12 @@
 name: "unet_deep_small"
 arch: "unet"
 emb_features: 256
-hid_channels: [32, 64, 128, 256, 512, 768, 1024]
-hid_blocks: [1, 2, 3, 3, 3, 3, 3]
+hid_channels: [32, 64, 128, 256, 512, 1024]
+hid_blocks: [1, 2, 3, 3, 3, 3]
 stride: [1, 2, 2]
 norm: "layer"
-attention_heads: {6: 8}
-periodic: false
+attention_heads: {5: 8}
+periodic: true
 dropout: 0.05
 checkpointing: true
 identity_init: true
